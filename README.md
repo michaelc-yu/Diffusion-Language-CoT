@@ -19,11 +19,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 ### 3: Download and prepare the datasets
+This will download and prepare 3 datasets (GSM8K, StrategyQA, and SVAMP)
 ```bash
 chmod +x scripts/prepare_all_datasets.sh
 bash scripts/prepare_all_datasets.sh
 ```
 ### 4: Download the model weights for the pretrained diffusion language models we need
+(Can skip this for now until we get this up on a GPU)
 ```bash
 chmod +x scripts/download_plaid.sh
 bash scripts/download_plaid.sh
@@ -46,14 +48,6 @@ python -m experiments.run_eval
 ```
 
 
-## Acknowledgements
-Parts of this code are adapted from:
-https://github.com/igul222/plaid/tree/main
-https://github.com/louaaron/Score-Entropy-Discrete-Diffusion/tree/main
-under the MIT License.
-
-
-
 ### Note on Running Scripts
 
 This repo uses Python's **module-based execution** to ensure proper relative imports.
@@ -63,6 +57,15 @@ python -m model.train
 
 Avoid running with:
 python model/train.py
+
+
+## Acknowledgements
+Parts of this code are adapted from:
+https://github.com/igul222/plaid/tree/main
+https://github.com/louaaron/Score-Entropy-Discrete-Diffusion/tree/main
+under the MIT License.
+
+
 
 
 
