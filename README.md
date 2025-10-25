@@ -1,15 +1,17 @@
 
 # Diffusion Language Model CoT
 
-(Hallucination knob can be iterated on top of this)
+*(Hallucination knob can be iterated on top of this)*
 
 
 ### 1: Setup a virtual environment (ideally with python 3.11) and activate it
-
+```
 python3.11 -m venv venv (preferred)
-python -m venv venv (can also do this but must use a supported python version)
-source venv/bin/activate
 
+python -m venv venv (can also do this but must use a supported python version)
+
+source venv/bin/activate
+```
 ### 2: Install requirements.txt
 
 pip install -r requirements.txt
