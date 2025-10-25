@@ -48,6 +48,19 @@ python -m experiments.run_eval
 ```
 
 
+### Notes on models
+
+For each of the 3 pretrained diffusion language models we're using (Plaid, Sedd, LadiR):
+
+models/*_adapter.py contains the model wrapper / interface code
+    -wraps the original architecture into standard torch module
+    -provide forward() interface used in training
+
+models/*_sampler.py contains sampling logic (generation)
+    -implements sampling by exposing a generate() method
+
+
+
 ### Note on Running Scripts
 
 This repo uses Python's **module-based execution** to ensure proper relative imports.
