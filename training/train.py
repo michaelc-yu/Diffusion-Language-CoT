@@ -111,6 +111,7 @@ class DiffusionCoTTrainer:
         self.early_stopping_patience = config.get('early_stopping_patience', 10)
         self.early_stopping_counter = 0
         
+        # Print hyperparameters
         print(f"\n{'='*70}")
         print(f"Trainer initialized: {model_type.upper()}")
         print(f"{'='*70}")
@@ -125,7 +126,7 @@ class DiffusionCoTTrainer:
         print(f"Corruption enabled: {config.get('use_corruption', True)}")
         print(f"{'='*70}\n")
     
-    def _setup_optimizer(self) -> torch.optim.Optimizer:
+    def _setup_optimizer(self) -> torch.optim.Optimizer: # TODO: check this
         """Setup optimizer with proper weight decay and parameter groups."""
         # Separate parameters into decay and no-decay groups
         no_decay = ['bias', 'LayerNorm.weight', 'layer_norm.weight']
@@ -284,135 +285,89 @@ class DiffusionCoTTrainer:
         }
     
     def train_epoch(self) -> Dict[str, float]:
-        """Train for one epoch."""
+        """Run one training epoch."""
         self.model.train()
         self.corruption_scheduler.update_epoch(self.current_epoch)
-        
+
         epoch_losses = []
-        epoch_metrics = {
-            'loss': [],
-            'loss_t_mean': [],
-            'loss_t_std': []
-        }
-        
-        pbar = tqdm(
-            self.train_loader,
-            desc=f"Epoch {self.current_epoch}/{self.config.get('num_epochs', 100)}",
-            dynamic_ncols=True
-        )
-        
-        start_time = time.time()
-        
-        for batch_idx, batch in enumerate(pbar):
+        metrics_buffer = {k: [] for k in ['loss_t_mean', 'loss_t_std']}
+
+        pbar = tqdm(self.train_loader, desc=f"Epoch {self.current_epoch}", dynamic_ncols=True)
+        start = time.time()
+
+        for batch in pbar:
             metrics = self.train_step(batch, self.global_step)
-            
-            # Track metrics
             epoch_losses.append(metrics['loss'])
-            for key, value in metrics.items():
-                if key in epoch_metrics:
-                    epoch_metrics[key].append(value)
-            
-            # Update progress bar
+
+            # Track extra metrics
+            for k in metrics_buffer:
+                if k in metrics:
+                    metrics_buffer[k].append(metrics[k])
+
+            # Progress bar
             pbar.set_postfix({
                 'loss': f"{metrics['loss']:.4f}",
                 'lr': f"{self.optimizer.param_groups[0]['lr']:.2e}",
                 'step': self.global_step
             })
-            
-            # Log to wandb
+
+            # WandB logging
             if self.use_wandb and self.global_step % self.config.get('log_interval', 10) == 0:
-                log_dict = {
+                wandb.log({
                     'train/loss': metrics['loss'],
                     'train/lr': self.optimizer.param_groups[0]['lr'],
                     'train/epoch': self.current_epoch,
                     'train/step': self.global_step,
-                }
-                
-                # Add corruption stats
-                corruption_stats = self.corruption_scheduler.get_corruption_stats()
-                for k, v in corruption_stats.items():
-                    log_dict[f'corruption/{k}'] = v
-                
-                # Add other metrics
-                for k, v in metrics.items():
-                    if k != 'loss':
-                        log_dict[f'train/{k}'] = v
-                
-                wandb.log(log_dict, step=self.global_step)
-            
+                    **{f'train/{k}': v for k, v in metrics.items() if k != 'loss'},
+                    **{f'corruption/{k}': v for k, v in self.corruption_scheduler.get_corruption_stats().items()}
+                }, step=self.global_step)
+
             self.global_step += 1
-        
-        epoch_time = time.time() - start_time
-        
-        # Compute epoch statistics
-        results = {
+
+        elapsed = time.time() - start
+
+        return {
             'loss': np.mean(epoch_losses),
             'loss_std': np.std(epoch_losses),
-            'time': epoch_time,
-            'samples_per_sec': len(self.train_loader.dataset) / epoch_time
+            'time': elapsed,
+            'samples_per_sec': len(self.train_loader.dataset) / elapsed,
+            **{f'{k}_mean': np.mean(v) for k, v in metrics_buffer.items() if v}
         }
-        
-        for key, values in epoch_metrics.items():
-            if values and key != 'loss':
-                results[f'{key}_mean'] = np.mean(values)
-        
-        return results
-    
+
+
     @torch.no_grad()
     def validate(self) -> Dict[str, float]:
-        """Validate the model."""
+        """Run validation."""
         self.model.eval()
-        
-        val_losses = []
-        val_metrics = {
-            'loss': [],
-            'loss_t_mean': [],
-            'loss_t_std': []
-        }
-        
+
+        losses = []
+        metrics_buffer = {k: [] for k in ['loss_t_mean', 'loss_t_std']}
+
         pbar = tqdm(self.val_loader, desc="Validation", dynamic_ncols=True)
-        
+
         for batch in pbar:
-            batch = {k: v.to(self.device) if torch.is_tensor(v) else v 
-                    for k, v in batch.items()}
-            
-            # Get embeddings (no corruption for validation)
-            token_ids = batch['input_ids']
-            embeddings = self.model.token_embeddings(token_ids)
-            
-            # Compute loss
+            batch = {k: v.to(self.device) if torch.is_tensor(v) else v for k, v in batch.items()}
+            x_start = batch['input_ids']
+            embeddings = self.model.token_embeddings(x_start)
+
             if self.use_amp:
                 with torch.cuda.amp.autocast():
-                    loss, metrics = self.vlb_loss(
-                        self.model,
-                        x_start=token_ids,
-                        embeddings=embeddings
-                    )
+                    loss, metrics = self.vlb_loss(self.model, x_start=x_start, embeddings=embeddings)
             else:
-                loss, metrics = self.vlb_loss(
-                    self.model,
-                    x_start=token_ids,
-                    embeddings=embeddings
-                )
-            
-            val_losses.append(loss.item())
-            for key, value in metrics.items():
-                if key in val_metrics:
-                    val_metrics[key].append(value)
-            
+                loss, metrics = self.vlb_loss(self.model, x_start=x_start, embeddings=embeddings)
+
+            losses.append(loss.item())
+            for k in metrics_buffer:
+                if k in metrics:
+                    metrics_buffer[k].append(metrics[k])
+
             pbar.set_postfix({'val_loss': f"{loss.item():.4f}"})
-        
-        # Compute validation statistics
-        results = {
-            'loss': np.mean(val_losses),
-            'loss_std': np.std(val_losses)
+
+        return {
+            'loss': np.mean(losses),
+            'loss_std': np.std(losses),
+            **{f'{k}_mean': np.mean(v) for k, v in metrics_buffer.items() if v}
         }
-        
-        for key, values in val_metrics.items():
-            if values and key != 'loss':
-                results[f'{key}_mean'] = np.mean(values)
-        
-        return results
     
     def save_checkpoint(
         self,
@@ -534,7 +489,7 @@ class DiffusionCoTTrainer:
             
             # Early stopping
             if self.early_stopping_counter >= self.early_stopping_patience:
-                print(f"\n⚠️  Early stopping triggered after {self.early_stopping_patience} epochs without improvement")
+                print(f"\nEarly stopping triggered after {self.early_stopping_patience} epochs without improvement")
                 break
         
         print(f"\n{'='*70}")

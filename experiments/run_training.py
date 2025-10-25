@@ -3,7 +3,7 @@
 import yaml
 from transformers import AutoTokenizer
 from data.loaders import get_dataloaders
-from training.train import create_trainer  # or wherever your `create_trainer()` is defined
+from training.train import create_trainer
 
 
 def load_config(path):
@@ -12,17 +12,14 @@ def load_config(path):
 
 
 def main(config_path="configs/train_base.yaml"):
-    # Load config
+
     config = load_config(config_path)
 
-    # Setup tokenizer
     tokenizer = AutoTokenizer.from_pretrained(config["model"]["backbone"])
     tokenizer.pad_token = tokenizer.eos_token
 
-    # Load data
     train_loader, val_loader = get_dataloaders(config, tokenizer)
 
-    # Create trainer
     trainer = create_trainer(
         model_type='base',
         train_loader=train_loader,
@@ -30,7 +27,6 @@ def main(config_path="configs/train_base.yaml"):
         config=config
     )
 
-    # Train
     trainer.train()
 
 

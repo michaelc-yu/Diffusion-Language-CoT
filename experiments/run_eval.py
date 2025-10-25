@@ -7,8 +7,8 @@ from transformers import AutoTokenizer
 import torch
 
 from models.base_diffusion_adapter import DiffusionTransformer
-from data.loaders import CoTDataset  # already written
-from eval.llm_judge import evaluate_with_llm  # optional, described below
+from data.loaders import CoTDataset
+from eval.llm_judge import evaluate_with_llm
 from data.loaders import get_dataloaders
 
 
@@ -47,7 +47,7 @@ def run_inference(model, tokenizer, val_loader, device):
 
 def main(config_path="configs/eval_base.yaml"):
     # config_path = "configs/eval_base.yaml"
-    checkpoint_path = "results/checkpoints/test/model_epoch_50.pt"  # example path
+    checkpoint_path = "results/checkpoints/test/model_epoch_50.pt"
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     config = load_config(config_path)
