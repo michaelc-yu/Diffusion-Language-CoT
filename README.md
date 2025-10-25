@@ -6,9 +6,11 @@
 
 ### 1: Setup a virtual environment (ideally with python 3.11) and activate it
 ```
-python3.11 -m venv venv (preferred)
+# (preferred)
+python3.11 -m venv venv
 
-python -m venv venv (can also do this but must use a supported python version)
+# (can also do this but must use a supported python version)
+python -m venv venv
 
 source venv/bin/activate
 ```
