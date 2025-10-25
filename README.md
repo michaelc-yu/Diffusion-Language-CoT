@@ -53,11 +53,15 @@ python -m experiments.run_eval
 For each of the 3 pretrained diffusion language models we're using (Plaid, Sedd, LadiR):
 
 **models/*_adapter.py** contains the model wrapper / interface code
+
 -wraps the original architecture into standard torch module
+
 -provide forward() interface used in training
 
 
+
 **models/*_sampler.py** contains sampling logic (generation)
+
 -implements sampling by exposing a generate() method
 
 
