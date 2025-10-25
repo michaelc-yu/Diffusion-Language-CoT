@@ -46,6 +46,11 @@ python -m experiments.run_eval
 ```
 
 
+## Acknowledgements
+Parts of this code are adapted from:
+https://github.com/igul222/plaid/tree/main
+https://github.com/louaaron/Score-Entropy-Discrete-Diffusion/tree/main
+under the MIT License.
 
 
 
