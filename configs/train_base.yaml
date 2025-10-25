@@ -1,0 +1,44 @@
+model:
+  backbone: gpt2
+  hidden_dim: 768
+  vocab_size: 50257
+  max_seq_length: 512
+  parameterization: x0
+
+learning_rate: 1e-4
+weight_decay: 0.01
+num_epochs: 50
+num_timesteps: 1000
+schedule_type: cosine
+loss_type: mse
+batch_size: 8
+gradient_accumulation_steps: 2
+grad_clip: 1.0
+warmup_steps: 1000
+use_amp: true
+use_wandb: true
+wandb_project: diffusion-cot
+
+use_corruption: true
+corruption:
+  mask_prob: 0.3
+  shuffle_prob: 0.2
+  drop_prob: 0.15
+  curriculum: true
+  warmup_epochs: 10
+
+corruption_types: ['mask', 'shuffle', 'drop']
+
+save_interval: 5
+log_interval: 10
+early_stopping_patience: 10
+checkpoint_dir: results/checkpoints/base_gpt2
+
+dataset_name: gsm8k
+train_path: data/gsm8k/train.jsonl
+val_path: data/gsm8k/test.jsonl
+corruptions:
+  masking: 0.3
+  shuffle: 0.2
+  drop_steps: 0.1
+

@@ -1,0 +1,20 @@
+model_type: base
+checkpoint_dir: results/checkpoints/base_gpt2
+eval_dataset: data/gsm8k/test.jsonl
+output_path: results/eval_outputs/base_gpt2_gsm8k.jsonl
+tokenizer_name: gpt2
+max_seq_length: 64
+use_llm_judge: true
+judge_model: gpt-4
+dataset_name: gsm8k
+train_path: data/gsm8k/train.jsonl
+val_path: data/gsm8k/test.jsonl
+batch_size: 8
+
+model:
+  backbone: gpt2
+  hidden_dim: 768
+  vocab_size: 50257
+  max_seq_length: 512
+  parameterization: x0
+  

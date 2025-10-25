@@ -1,0 +1,13 @@
+datasets
+pyyaml
+torch
+transformers
+wandb
+accelerate
+numpy>=1.23,<2.0
+einops>=0.6.0
+fire==0.5.0
+mup==1.0.0
+tqdm==4.65.0
+openai
+wandb

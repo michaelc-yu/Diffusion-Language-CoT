@@ -1,0 +1,9 @@
+dataset_name: gsm8k
+train_path: data/gsm8k/train.jsonl
+val_path: data/gsm8k/test.jsonl
+batch_size: 8
+
+corruptions:
+  masking: 0.3
+  shuffle: 0.2
+  drop_steps: 0.1
