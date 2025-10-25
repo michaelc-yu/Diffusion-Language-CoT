@@ -19,31 +19,31 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 ### 3: Download and prepare the datasets
-
+```bash
 chmod +x scripts/prepare_all_datasets.sh
 bash scripts/prepare_all_datasets.sh
-
+```
 ### 4: Download the model weights for the pretrained diffusion language models we need
-
+```bash
 chmod +x scripts/download_plaid.sh
 bash scripts/download_plaid.sh
-
+```
 ### 5: Login to wandb
-
+```bash
 python -m wandb login
-
+```
 ### 6: Modify the train config file in configs/train_base.yaml to desired configs
 
 ### 7: Run training
-
+```bash
 python -m experiments.run_training
-
+```
 ### 8: Modify the eval config file in configs/eval_base.yaml to desired configs
 
 ### 9: Run evaluation
-
+```bash
 python -m experiments.run_eval
-
+```
 
 
 
