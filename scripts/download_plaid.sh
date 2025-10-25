@@ -23,7 +23,7 @@ for CHUNK in "${CHUNKS[@]}"; do
         echo "Downloading $CHUNK ..."
         wget "$BASE_URL/$CHUNK"
     else
-        echo "✅ $CHUNK already exists, skipping..."
+        echo "$CHUNK already exists, skipping..."
     fi
 done
 

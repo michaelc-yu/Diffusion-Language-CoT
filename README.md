@@ -76,6 +76,10 @@ Avoid running with:
 python model/train.py
 
 
+### Libraries
+Using the einops library for tensor operations (https://einops.rocks/)
+
+
 ## Acknowledgements
 Parts of this code are adapted from:
 https://github.com/igul222/plaid/tree/main
