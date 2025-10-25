@@ -1,4 +1,0 @@
-
-
-class LADIRDiffusion:
-    pass

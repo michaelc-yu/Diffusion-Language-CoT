@@ -1,4 +1,4 @@
-import openai  # or other API client
+from openai import OpenAI
 import tqdm
 
 def evaluate_with_llm(examples, config):

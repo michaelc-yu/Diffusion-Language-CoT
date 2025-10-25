@@ -3,7 +3,7 @@
 
 *(Hallucination knob can be iterated on top of this)*
 
-Supports training on GSM8K, SVAMP, StrategyQA datasets, and training time corruptions: masking, shuffling, dropout (percentages are configurable in config file). Supports training a diffusion language model from scratch (base diffusion) or fine-tuning existing diffusion language models (Plaid, SEDD, and LaDir). Plots training results to wandb and evaluates it with LLM as a judge.
+Supports training on GSM8K, SVAMP, StrategyQA datasets, and training time corruptions: masking, shuffling, dropout (percentages are configurable in config file). Supports training a diffusion language model from scratch (base diffusion) or fine-tuning existing diffusion language models (Plaid, SEDD, and LLaDA). Plots training results to wandb and evaluates it with LLM as a judge.
 
 
 ### 1: Setup a virtual environment (ideally with python 3.11) and activate it
@@ -52,7 +52,7 @@ python -m experiments.run_eval
 
 ### Notes on models
 
-For each of the 3 pretrained diffusion language models we're using (Plaid, Sedd, LadiR):
+For each of the 3 pretrained diffusion language models we're using (Plaid, Sedd, LLaDA):
 
 **models/*_adapter.py** contains the model wrapper / interface code
 

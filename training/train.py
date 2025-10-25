@@ -39,7 +39,7 @@ class DiffusionCoTTrainer:
         val_loader: DataLoader,
         config: Dict,
         device: str = 'cuda',
-        model_type: str = 'base'  # 'base', 'plaid', 'sedd', 'ladir'
+        model_type: str = 'base'  # 'base', 'plaid', 'sedd', 'llada'
     ):
         """
         Args:
@@ -515,7 +515,7 @@ def create_trainer(
     Factory function to create trainer for different diffusion model types.
     
     Args:
-        model_type: 'base', 'plaid', 'sedd', or 'ladir'
+        model_type: 'base', 'plaid', 'sedd', or 'llada'
         train_loader: Training dataloader
         val_loader: Validation dataloader
         config: Configuration dictionary
@@ -550,9 +550,9 @@ def create_trainer(
             vocab_size=config['model']['vocab_size']
         )
     
-    elif model_type == 'ladir':
-        from models.ladir_adapter import LADIRDiffusion
-        model = LADIRDiffusion(
+    elif model_type == 'llada':
+        from models.llada_adapter import LLaDADiffusion
+        model = LLaDADiffusion(
             backbone=config['model']['backbone'],
             hidden_dim=config['model']['hidden_dim'],
             vocab_size=config['model']['vocab_size'],
@@ -629,7 +629,7 @@ if __name__ == "__main__":
     
     # Create trainer
     trainer = create_trainer(
-        model_type='base',  # or 'plaid', 'sedd', 'ladir'
+        model_type='base',  # or 'plaid', 'sedd', 'llada'
         train_loader=train_loader,
         val_loader=val_loader,
         config=config
