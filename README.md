@@ -5,7 +5,7 @@
 
 
 ### 1: Setup a virtual environment (ideally with python 3.11) and activate it
-```
+```bash
 # (preferred)
 python3.11 -m venv venv
 
@@ -15,9 +15,9 @@ python -m venv venv
 source venv/bin/activate
 ```
 ### 2: Install requirements.txt
-
+```bash
 pip install -r requirements.txt
-
+```
 ### 3: Download and prepare the datasets
 
 chmod +x scripts/prepare_all_datasets.sh
