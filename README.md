@@ -1,7 +1,6 @@
 
 # Diffusion Language Model CoT
 
-*(Hallucination knob can be iterated on top of this)*
 
 Supports training on GSM8K, SVAMP, StrategyQA datasets, and training time corruptions: masking, shuffling, dropout (percentages are configurable in config file). Supports training a diffusion language model from scratch (base diffusion) or fine-tuning existing diffusion language models (Plaid, SEDD, and LLaDA). Plots training results to wandb and evaluates it with LLM as a judge.
 
